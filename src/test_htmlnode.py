@@ -2,6 +2,7 @@ import unittest
 
 from htmlnode import HTMLNode
 from htmlnode import LeafNode
+from htmlnode import ParentNode
 
 class TestHTMLNode(unittest.TestCase):
     def test_props_to_html(self):
@@ -53,6 +54,62 @@ class TestLeafNode(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             LeafNode(tag="p", value=None)  # Instantiation should fail directly
             self.assertEqual(str(context.exception), "A LeafNode must have a value")
+
+class TestParentNode(unittest.TestCase):
+    
+    def test_parentnode_with_tag_and_children(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text")
+                ]
+                )
+        expected = "<p><b>Bold text</b></p>"
+        self.assertEqual(node.to_html(), expected)
+
+    def test_parentnode_without_tag(self):
+        with self.assertRaises(ValueError) as context:
+            ParentNode(tag=None, children=[LeafNode("b", "Bold text")])  # Instantiation should fail directly
+            self.assertEqual(str(context.exception), "A ParentNode must have a tag")
+
+    def test_parentnode_without_children(self):
+        with self.assertRaises(ValueError) as context:
+            ParentNode(tag="p", children=None)  # Instantiation should fail directly
+            self.assertEqual(str(context.exception), "children is a missing value")
+
+    def test_multiple_children_parentnode(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+                ],
+                )
+        expected = "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>"
+        self.assertEqual(node.to_html(), expected)
+
+    def test_parentnode_repr(self):
+        node = ParentNode(
+            tag="p",
+            children=[LeafNode("b", "Bold text")],
+            props={"class": "parent"}
+            )
+        expected = "HTMLNode(p, None, [HTMLNode(b, Bold text, None, None)], {'class': 'parent'})"
+        self.assertEqual(repr(node), expected)
+
+    def test_nested_parentnode(self):
+        inner_node = ParentNode(
+            "p",
+            [LeafNode("b", "Bold text")]
+            )
+        outer_node = ParentNode(
+            "div",
+            [inner_node]
+            )
+        expected = "<div><p><b>Bold text</b></p></div>"
+        self.assertEqual(outer_node.to_html(), expected)
 
 if __name__ == "__main__":
     unittest.main()
