@@ -1,8 +1,5 @@
 import unittest
-
-from htmlnode import HTMLNode
-from htmlnode import LeafNode
-from htmlnode import ParentNode
+from htmlnode import LeafNode, ParentNode, HTMLNode
 
 class TestHTMLNode(unittest.TestCase):
     def test_props_to_html(self):
