@@ -1,5 +1,5 @@
 import unittest
-from inline_markdown import split_nodes_delimiter
+from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 from textnode import TextNode, TextType
 
 class Test_split_delimiter(unittest.TestCase):
@@ -62,6 +62,22 @@ class Test_split_delimiter(unittest.TestCase):
   def test_empty_nodes_list(self):
     new_nodes = split_nodes_delimiter([], "`", TextType.CODE)
     self.assertEqual(new_nodes, [])
+
+class Test_extract_markdown(unittest.TestCase):
+    def test_strings_malformed(self):
+        text = "Oops [broken](link and ![forgot](https://image)"
+        self.assertEqual(extract_markdown_links(text), [])
+        self.assertEqual(extract_markdown_images(text), [])
+
+    def test_mixed_links_and_images(self):
+        text = "Both here [text](link) and ![image](image_link) exist."
+        self.assertEqual(extract_markdown_links(text), [("text", "link")])
+        self.assertEqual(extract_markdown_images(text), [("image", "image_link")])
+
+    def test_empty_content(self):
+        text = "![](image_link) or [text]()"
+        self.assertEqual(extract_markdown_links(text), [("text", "")])
+        self.assertEqual(extract_markdown_images(text), [("", "image_link")])
 
 if __name__ == "__main__":
     unittest.main()
