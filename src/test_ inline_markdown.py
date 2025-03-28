@@ -1,5 +1,5 @@
 import unittest
-from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
+from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, markdown_to_blocks
 from textnode import TextNode, TextType
 
 class Test_split_delimiter(unittest.TestCase):
@@ -78,6 +78,105 @@ class Test_extract_markdown(unittest.TestCase):
         text = "![](image_link) or [text]()"
         self.assertEqual(extract_markdown_links(text), [("text", "")])
         self.assertEqual(extract_markdown_images(text), [("", "image_link")])
+
+class Test_split_nodes(unittest.TestCase):
+    def test_split_nodes_image():
+        # Test 1: Basic image
+        node = TextNode("This is ![image](url.png) test", TextType.TEXT)
+        nodes = split_nodes_image([node])
+        assert len(nodes) == 3
+        assert nodes[0].text == "This is "
+        assert nodes[1].text == "image"
+        assert nodes[1].url == "url.png"
+        assert nodes[2].text == " test"
+
+        # Test 2: Multiple images
+        node = TextNode("![1](url1) ![2](url2)", TextType.TEXT)
+        nodes = split_nodes_image([node])
+        assert len(nodes) == 2
+        assert nodes[0].text == "1"
+        assert nodes[1].text == "2"
+
+        # Test 3: No images
+        node = TextNode("Plain text", TextType.TEXT)
+        nodes = split_nodes_image([node])
+        assert len(nodes) == 1
+        assert nodes[0].text == "Plain text"
+
+    def test_split_nodes_link():
+        # Test 1: Basic link
+        node = TextNode("This is [link](url) test", TextType.TEXT)
+        nodes = split_nodes_link([node])
+        assert len(nodes) == 3
+        assert nodes[0].text == "This is "
+        assert nodes[1].text == "link"
+        assert nodes[1].url == "url"
+        assert nodes[2].text == " test"
+
+        # Test 2: Multiple links
+        node = TextNode("[1](url1) [2](url2)", TextType.TEXT)
+        nodes = split_nodes_link([node])
+        assert len(nodes) == 2
+        assert nodes[0].text == "1"
+        assert nodes[1].text == "2"
+
+class TestMarkdownParser(unittest.TestCase):
+    def test_markdown_to_blocks(self):
+        md = """
+    This is **bolded** paragraph
+    
+    This is another paragraph with _italic_ text and `code` here
+    This is the same paragraph on a new line
+    
+    - This is a list
+    - with items
+    """
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+                ],
+                )
+        
+    def test_empty_markdown(self):
+        md = ""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks, [])
+
+    def test_single_block(self):
+        md = "Just one block with no newlines"
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks, ["Just one block with no newlines"])
+
+    def test_multiple_newlines_between_blocks(self):
+        md = "First block\n\n\n\nSecond block"
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks, ["First block", "Second block"])
+
+    def test_leading_and_trailing_newlines(self):
+        md = "\n\nMiddle block\n\n"
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks, ["Middle block"])
+
+    def test_code_blocks(self):
+        md = "```python\ndef hello():\n    print('Hello')\n```"
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks, ["```python\ndef hello():\n    print('Hello')\n```"])
+
+    def test_mixed_content(self):
+        md = "# Heading\n\nParagraph with **bold** and _italic_\n\n- List item 1\n- List item 2"
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "# Heading", 
+                "Paragraph with **bold** and _italic_", 
+                "- List item 1\n- List item 2"
+            ]
+        )
 
 if __name__ == "__main__":
     unittest.main()
