@@ -39,18 +39,15 @@ class TestTextNode(unittest.TestCase):
             "TextNode(This is a text node, Bold, https://www.boot.dev)", repr(node)
         )
 
-        
-class MockTextNode:
-    def __init__(self, type, value, url=None, alt_text=None):
-      self.type = type
-      self.value = value
-      self.url = url
-      self.alt_text = alt_text
+class TestTextNodeToHTMLNode(unittest.TestCase):
 
-class Test_text_node_to_html_node(unittest.TestCase):
+    def setUp(self):
+        # Reusable sample value
+        self.sample_url = "http://example.com"
+
     def test_text_type_text(self):
         # Mock a TextNode for TEXT type
-        text_node = MockTextNode(type=TextType.TEXT, value="Hello")
+        text_node = TextNode(text="Hello", text_type=TextType.TEXT)
         result = text_node_to_html_node(text_node)
         self.assertEqual(result.tag, None)
         self.assertEqual(result.value, "Hello")
@@ -58,7 +55,7 @@ class Test_text_node_to_html_node(unittest.TestCase):
 
     def test_text_type_bold(self):
         # Mock a TextNode for BOLD type
-        text_node = MockTextNode(type=TextType.BOLD, value="Bold Text")
+        text_node = TextNode(text="Bold Text", text_type=TextType.BOLD)
         result = text_node_to_html_node(text_node)
         self.assertEqual(result.tag, "b")
         self.assertEqual(result.value, "Bold Text")
@@ -66,11 +63,11 @@ class Test_text_node_to_html_node(unittest.TestCase):
 
     def test_text_type_link(self):
         # Mock a TextNode for LINK type
-        text_node = MockTextNode(type=TextType.LINK, value="Click here", url="http://example.com")
+        text_node = TextNode(text="Click here", text_type=TextType.LINK, url=self.sample_url)
         result = text_node_to_html_node(text_node)
         self.assertEqual(result.tag, "a")
         self.assertEqual(result.value, "Click here")
-        self.assertEqual(result.props, {"href": "http://example.com"})
+        self.assertEqual(result.props, {"href": self.sample_url})
 
 if __name__ == "__main__":
     unittest.main()

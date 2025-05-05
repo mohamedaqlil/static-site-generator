@@ -25,8 +25,6 @@ class TestHTMLNode(unittest.TestCase):
         expected = "HTMLNode(None, None, None, None)"
         self.assertEqual(expected, repr(node))
 
-class TestLeafNode(unittest.TestCase):
-
     def test_leafnode_with_tag_and_value(self):
         node = LeafNode(tag="span", value="Hello")
         expected = "<span>Hello</span>"
@@ -51,8 +49,6 @@ class TestLeafNode(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             LeafNode(tag="p", value=None)  # Instantiation should fail directly
             self.assertEqual(str(context.exception), "A LeafNode must have a value")
-
-class TestParentNode(unittest.TestCase):
     
     def test_parentnode_with_tag_and_children(self):
         node = ParentNode(

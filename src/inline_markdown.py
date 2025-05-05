@@ -1,6 +1,15 @@
 from textnode import TextNode, TextType
 import re
 
+def text_to_textnodes(text):
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    return nodes
+
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
   new_nodes = []
   for node in old_nodes:
@@ -105,19 +114,3 @@ def split_nodes_image(old_nodes):
       new_nodes.append(TextNode(current_text, TextType.TEXT))
             
   return new_nodes
-
-def markdown_to_blocks(markdown):
-  # Remove leading/trailing whitespace from entire document
-  cleaned_markdown = markdown.strip()
-    
-  # Split by double newlines
-  blocks = cleaned_markdown.split('\n\n')
-    
-  # Clean up each block and remove empty ones
-  result = []
-  for block in blocks:
-      block = block.strip()
-      if block:  # Only add non-empty blocks
-          result.append(block)
-    
-  return result
