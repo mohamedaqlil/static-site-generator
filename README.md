@@ -3,7 +3,7 @@
 
 This is a simple static site generator built from scratch in Python. It takes markdown content, processes it into HTML pages, and copies static assets into a deployable `docs/` folder — similar to tools like Jekyll or Hugo, but minimalist and fully custom.
 
-![Preview Screenshot](./preview.jpg)
+![Preview Screenshot](assets/preview.jpg)
 
 ---
 
@@ -64,7 +64,7 @@ cd static-site-generator
 
 ## 📸 Demo
 
-![Site Preview](./demo-screenshot.jpg)
+![Site Preview](assets/demo-screenshot.jpg)
 
 Check out the [demo video here](https://link-to-your-video.com) 🎥
 
