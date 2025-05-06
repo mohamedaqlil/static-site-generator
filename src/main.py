@@ -1,8 +1,14 @@
 from textnode import *
+import shutil
+import os
+from copy_static import copy_recursive
 
 def main():
-    text_node = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")
-    print(text_node)
+    if os.path.exists("public"):
+        shutil.rmtree("public")
+    os.mkdir("public")
+
+    copy_recursive("static", "public")
     
 if __name__ == "__main__":
     main()
