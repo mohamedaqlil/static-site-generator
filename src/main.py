@@ -2,7 +2,7 @@ from textnode import *
 import shutil
 import os
 from copy_static import copy_recursive
-from generate_page import generate_page
+from generate_page import generate_page, generate_pages_recursive
 
 def main():
     # Create output directory structure
@@ -16,13 +16,13 @@ def main():
     # Copy static files
     if os.path.exists("static"):
         # Copy all static files to public
-        shutil.copytree("static", "public", dirs_exist_ok=True)
+        copy_recursive("static", "public")
     
     # Generate the index page
-    generate_page(
-        from_path="content/index.md",
+    generate_pages_recursive(
+        dir_path_content="content",
         template_path="template.html",
-        dest_path="public/index.html"
+        dest_dir_path="public"
     )
 
 if __name__ == "__main__":
