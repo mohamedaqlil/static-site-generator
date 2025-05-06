@@ -2,7 +2,7 @@ import os
 from extract_title import extract_title
 from markdown_blocks import markdown_to_html_node
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     # Print status message
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     
@@ -24,6 +24,8 @@ def generate_page(from_path, template_path, dest_path):
     # Replace placeholders in the template
     final_html = template_content.replace("{{ Title }}", title)
     final_html = final_html.replace("{{ Content }}", html_content)
+    final_html = final_html.replace('href="/', f'href="{basepath}')
+    final_html = final_html.replace('src="/', f'src="{basepath}')
     
     # Ensure the directory exists
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
@@ -32,7 +34,7 @@ def generate_page(from_path, template_path, dest_path):
     with open(dest_path, "w") as file:
         file.write(final_html)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     # Get all entries in the content directory
     entries = os.listdir(dir_path_content)
     
@@ -49,7 +51,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                 dest_path = os.path.join(dest_dir_path, rel_path.replace('.md', '.html'))
                 
                 # Generate the page
-                generate_page(source_path, template_path, dest_path)
+                generate_page(source_path, template_path, dest_path, basepath)
         else:
             # It's a directory, recursively process it
             new_content_dir = source_path
@@ -59,4 +61,4 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
             os.makedirs(new_dest_dir, exist_ok=True)
             
             # Recursive call
-            generate_pages_recursive(new_content_dir, template_path, new_dest_dir)
+            generate_pages_recursive(new_content_dir, template_path, new_dest_dir, basepath)
