@@ -66,7 +66,7 @@ cd static-site-generator
 
 ![Site Preview](assets/demo-screenshot.jpg)
 
-Check out the [demo video here](https://link-to-your-video.com) 🎥
+Check out the [demo video here](https://youtu.be/mWKk3hlP9eQ?si=8k5uEI5xAM8ZNc__) 🎥
 
 ---
 
